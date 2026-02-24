@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import toast from "react-hot-toast";
 
-const BASE_URL = "http://localhost:5000/api/pastes";
+const BASE_URL = "http://localhost:5001/api/pastes";
 
 // ── Async Thunks (API calls to backend) ──────────────────────────────────────
 

@@ -4,7 +4,7 @@ const pasteRoutes = require("./pasteRoutes");
 const authRoutes = require("./authRoutes");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;  // change 5000 → 5001
 
 app.use(cors());
 app.use(express.json());
