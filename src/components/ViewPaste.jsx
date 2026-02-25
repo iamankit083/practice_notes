@@ -8,11 +8,10 @@ const ViewPaste = () => {
   const [paste, setPaste] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch the individual paste directly from backend
   useEffect(() => {
     const fetchPaste = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/pastes/${id}`);
+        const res = await fetch(`https://practicenotes-production.up.railway.app/api/pastes/${id}`);
         const data = await res.json();
         if (data.success) {
           setPaste(data.paste);
@@ -25,25 +24,11 @@ const ViewPaste = () => {
         setLoading(false);
       }
     };
-
     fetchPaste();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="w-full py-20 text-center text-xl text-gray-400">
-        Loading...
-      </div>
-    );
-  }
-
-  if (!paste) {
-    return (
-      <div className="w-full py-20 text-center text-xl text-red-400">
-        Paste not found.
-      </div>
-    );
-  }
+  if (loading) return <div className="w-full py-20 text-center text-xl text-gray-400">Loading...</div>;
+  if (!paste) return <div className="w-full py-20 text-center text-xl text-red-400">Paste not found.</div>;
 
   return (
     <div className="w-full h-full py-10 max-w-[1200px] mx-auto px-5 lg:px-0">
@@ -65,22 +50,16 @@ const ViewPaste = () => {
             <div className="w-fit flex items-center gap-x-4 px-4">
               <button
                 className="flex justify-center items-center transition-all duration-300 ease-in-out group"
-                onClick={() => {
-                  navigator.clipboard.writeText(paste.content);
-                  toast.success("Copied to Clipboard");
-                }}
+                onClick={() => { navigator.clipboard.writeText(paste.content); toast.success("Copied to Clipboard"); }}
               >
                 <Copy className="group-hover:text-green-500" size={20} />
               </button>
             </div>
           </div>
-
           <textarea
             value={paste.content}
             disabled
-            placeholder="Write Your Content Here...."
             className="w-full p-3 focus-visible:ring-0"
-            style={{ caretColor: "#000" }}
             rows={20}
           />
         </div>
