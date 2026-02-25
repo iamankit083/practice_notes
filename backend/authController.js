@@ -7,20 +7,31 @@ const { createUser } = require("./userModel");
 const USERS_PATH = path.join(__dirname, "users.json");
 const JWT_SECRET = process.env.JWT_SECRET || "your_super_secret_key_change_in_production";
 
-// Helper: read users
 const readUsers = () => {
-  if (!fs.existsSync(USERS_PATH)) fs.writeFileSync(USERS_PATH, JSON.stringify([]));
-  return JSON.parse(fs.readFileSync(USERS_PATH, "utf-8"));
+  try {
+    if (!fs.existsSync(USERS_PATH)) {
+      fs.writeFileSync(USERS_PATH, JSON.stringify([]));
+      return [];
+    }
+    const content = fs.readFileSync(USERS_PATH, "utf-8");
+    return content ? JSON.parse(content) : [];
+  } catch (err) {
+    console.error("Failed to read users:", err);
+    return [];
+  }
 };
 
-// Helper: write users
-const writeUsers = (data) => fs.writeFileSync(USERS_PATH, JSON.stringify(data, null, 2));
+const writeUsers = (data) => {
+  try {
+    fs.writeFileSync(USERS_PATH, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error("Failed to write users:", err);
+  }
+};
 
-// POST /api/auth/signup
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
     if (!name || !email || !password)
       return res.status(400).json({ success: false, message: "All fields are required." });
 
@@ -34,9 +45,7 @@ const signup = async (req, res) => {
     users.push(newUser);
     writeUsers(users);
 
-    const token = jwt.sign({ id: newUser._id, email: newUser.email }, JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign({ id: newUser._id, email: newUser.email }, JWT_SECRET, { expiresIn: "7d" });
 
     res.status(201).json({
       success: true,
@@ -45,15 +54,14 @@ const signup = async (req, res) => {
       user: { _id: newUser._id, name: newUser.name, email: newUser.email },
     });
   } catch (err) {
+    console.error("Signup error:", err);
     res.status(500).json({ success: false, message: "Signup failed." });
   }
 };
 
-// POST /api/auth/login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     if (!email || !password)
       return res.status(400).json({ success: false, message: "Email and password are required." });
 
@@ -75,11 +83,11 @@ const login = async (req, res) => {
       user: { _id: user._id, name: user.name, email: user.email },
     });
   } catch (err) {
+    console.error("Login error:", err);
     res.status(500).json({ success: false, message: "Login failed." });
   }
 };
 
-// GET /api/auth/me  (verify token)
 const getMe = (req, res) => {
   const users = readUsers();
   const user = users.find((u) => u._id === req.user.id);
