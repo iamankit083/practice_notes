@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import toast from "react-hot-toast";
 
-const BASE_URL = "practicenotes-production.up.railway.app/api/auth";
+const BASE_URL = "https://practicenotes-production.up.railway.app/api/auth";
 
 // ── Async Thunks ─────────────────────────────────────────────────────────────
 
