@@ -4,9 +4,13 @@ const pasteRoutes = require("./pasteRoutes");
 const authRoutes = require("./authRoutes");
 
 const app = express();
-const PORT = process.env.PORT || 5001;  // change 5000 → 5001
+const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+  origin: "*",   // allows all origins — fine for now, can restrict later
+  methods: ["GET", "POST", "PUT", "DELETE"],
+}));
+
 app.use(express.json());
 
 app.use("/api/pastes", pasteRoutes);
