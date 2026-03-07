@@ -15,7 +15,7 @@ const ViewPaste = () => {
   useEffect(() => {
     const fetchPaste = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/pastes/${id}`);
+        const res = await fetch(`https://practicenotes-production.up.railway.app/api/pastes/${id}`);
         const data = await res.json();
         if (data.success) {
           setPaste(data.paste);

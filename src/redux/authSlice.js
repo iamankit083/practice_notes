@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import toast from "react-hot-toast";
 
-const BASE_URL = "https://practicenotes-production.up.railway.app/api/auth";
+// ✅ Fix: use env variable so it works both locally and in production
+// In your .env file set: VITE_AUTH_URL=https://practicenotes-production.up.railway.app/api/auth
+const BASE_URL = import.meta.env.VITE_AUTH_URL || "https://practicenotes-production.up.railway.app/api/auth";
 
 // ── Async Thunks ─────────────────────────────────────────────────────────────
 
