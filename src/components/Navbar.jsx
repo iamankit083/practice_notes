@@ -1,83 +1,97 @@
-import { NavbarData } from "../data/Navbar";
-import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../redux/authSlice";
-import { LogOut, User } from "lucide-react";
+import { NavbarData } from "../data/Navbar";
+import { NavLink } from "react-router-dom";
+import { toggleDarkMode } from "../redux/themeSlice";
+import { useState } from "react";
+import { Menu, X, Moon, Sun } from "lucide-react";
 
-const Navbar = ({ darkMode, toggleTheme }) => {
+const Navbar = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  const darkmode = useSelector((state) => state.theme.darkmode);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <div className="w-full h-[55px] flex justify-between items-center px-6 bg-gray-800 border-b border-gray-700">
-      {/* Left: Navigation Links */}
-      <div className="flex gap-x-5">
-        {NavbarData.map((link, idx) => (
-          <NavLink
-            key={idx}
-            to={link.path}
-            className={({ isActive }) =>
-              isActive
-                ? "text-blue-400 font-semibold text-lg"
-                : "text-gray-300 hover:text-white font-medium text-lg transition"
-            }
+    <nav className="w-full bg-gray-800 dark:bg-gray-900 transition-colors duration-200 sticky top-0 z-50">
+      <div className="flex justify-between items-center px-4 sm:px-6 py-3 sm:py-4">
+        {/* Logo/Brand */}
+        <div className="flex items-center">
+          <span className="text-white font-bold text-lg sm:text-xl">Notes</span>
+        </div>
+
+        {/* Desktop Navigation */}
+        <div className="hidden sm:flex gap-x-6 md:gap-x-8" role="navigation" aria-label="Main navigation">
+          {NavbarData.map((link, idx) => (
+            <NavLink
+              key={idx}
+              to={link.path}
+              className={({ isActive }) =>
+                `font-medium text-base md:text-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 rounded px-2 py-1 ${
+                  isActive
+                    ? "text-blue-500 dark:text-blue-400 font-semibold"
+                    : "text-white dark:text-gray-300 hover:text-blue-400 dark:hover:text-blue-300"
+                }`
+              }
+            >
+              {link.title}
+            </NavLink>
+          ))}
+        </div>
+
+        {/* Right: Toggle Theme & Mobile Menu */}
+        <div className="flex items-center gap-x-3">
+          <button
+            onClick={() => dispatch(toggleDarkMode())}
+            className="p-2 rounded-lg bg-gray-700 dark:bg-gray-800 hover:bg-gray-600 dark:hover:bg-gray-700 text-yellow-400 dark:text-yellow-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            aria-label="Toggle dark mode"
           >
-            {link.title}
-          </NavLink>
-        ))}
+            {darkmode ? (
+              <Sun size={20} />
+            ) : (
+              <Moon size={20} />
+            )}
+          </button>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={toggleMenu}
+            className="sm:hidden p-2 rounded-lg bg-gray-700 dark:bg-gray-800 hover:bg-gray-600 dark:hover:bg-gray-700 text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            aria-label="Toggle mobile menu"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-nav"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
-      {/* Right: Auth + Theme */}
-      <div className="flex items-center gap-x-4">
-        {user ? (
-          <>
-            {/* User greeting */}
-            <div className="flex items-center gap-x-2 text-gray-300 text-sm">
-              <User size={16} className="text-blue-400" />
-              <span className="hidden sm:inline">{user.name}</span>
-            </div>
-
-            {/* Logout */}
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-x-1.5 px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition"
-            >
-              <LogOut size={15} />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
-          </>
-        ) : (
-          <>
-            <NavLink
-              to="/login"
-              className="text-sm text-gray-300 hover:text-white transition font-medium"
-            >
-              Login
-            </NavLink>
-            <NavLink
-              to="/signup"
-              className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg font-medium transition"
-            >
-              Sign Up
-            </NavLink>
-          </>
-        )}
-
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="px-3 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg font-medium transition"
-        >
-          {darkMode ? "Light" : "Dark"}
-        </button>
-      </div>
-    </div>
+      {/* Mobile Navigation Menu */}
+      {isMenuOpen && (
+        <div className="sm:hidden bg-gray-700 dark:bg-gray-800 border-t border-gray-600 dark:border-gray-700" id="mobile-nav">
+          <div className="flex flex-col gap-y-2 px-4 py-3">
+            {NavbarData.map((link, idx) => (
+              <NavLink
+                key={idx}
+                to={link.path}
+                onClick={() => setIsMenuOpen(false)}
+                className={({ isActive }) =>
+                  `py-2 px-3 rounded-md font-medium text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 ${
+                    isActive
+                      ? "bg-blue-600 dark:bg-blue-700 text-white"
+                      : "text-gray-100 dark:text-gray-300 hover:bg-gray-600 dark:hover:bg-gray-700"
+                  }`
+                }
+              >
+                {link.title}
+              </NavLink>
+            ))}
+          </div>
+        </div>
+      )}
+    </nav>
   );
 };
 
